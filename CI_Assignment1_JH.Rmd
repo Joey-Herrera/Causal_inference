@@ -20,10 +20,10 @@ Answer: (1) Real people
 
 Question 2:In your own words, answer the following questions.
 2A. How is data science similar to and different from causal inference?
-Both data science and causal inference seek to tell stories using data. The main difference between the two feilds is that causal inference seeks to specifically find causal relationships whereas data science has more broad applications.
+Both data science and causal inference seek to tell stories using data. The main difference between the two fields is that causal inference seeks to specifically find causal relationships, whereas data science has more broad applications.
 
 2B. Briefly a predominantly data science research project and a predominantly causal inference research project.
-A predominately data science research project will start out with a testable question that does not necessary have to search for a causal effect. Next, data will be collected and turned into a useable form. Then, analysis will be performed on the dataset and conclusions will be drawn. A predominately causal inference research project asks a specific question regarding a causal connection between variables.
+A predominately data science research project will start out with a testable question that does not necessarily have to search for a causal effect. Next, data will be collected and turned into a useable form. Then, analysis will be performed on the dataset, and conclusions will be drawn. A predominately causal inference research project asks a specific question regarding a causal connection between variables.
 
 Question 3: According to Keyes, 2019, what is perhaps a more accurate definition of data science (pick one)?
 Answer: (1) ‘The inhumane reduction of humanity down to what can be counted.’
