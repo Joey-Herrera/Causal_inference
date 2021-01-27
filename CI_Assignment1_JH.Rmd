@@ -1,6 +1,8 @@
 ---
 title: "CI_Assignment1_JH"
 author: "Joey Herrera"
+header-includes:
+    - \usepackage{setspace}\doublespacing
 date: "1/26/2021"
 output: pdf_document
 ---
