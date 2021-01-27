@@ -1,0 +1,29 @@
+---
+title: "CI_Assignment1_JH"
+author: "Joey Herrera"
+date: "1/26/2021"
+output: pdf_document
+---
+## Causal Inference Personal Statement
+### Past
+I grew up in a predominately white suburb of Fort Worth called Benbrook. My parents chose to relocate to this area soon after I was born so I could attend one of the best elementary schools in the state. As a Hispanic kid navigating grade school, I was constantly told that I look brown, but I talk like a “white person.” I didn’t mind this since I had no trouble making friends and finding my passion. I will never forget how my struggle with anxiety as a ten-year-old made me want to help other people, even though I wasn’t sure how that would manifest itself. My parents introduced me to sports at an early age, which became an outlet to help me with my mental health. My passion for sports curated significant quality time with my family and weekends during high school when my friends and I would go to our local park to play basketball or volleyball until 3 or 4 in the morning. In high school I also started to experience the difficulties of being a potential first-generation college student. I had little guidance during the application process and even more minimal exposure to potential opportunities for first-generation students of color. This made me scared to choose a University to attend because I had no idea how to navigate an institution of higher education. Thankfully, my nerves were put at ease after touring the University of Oklahoma, which felt like home.
+
+### Present
+I spent the last four years at the University of Oklahoma, where I graduated Summa Cum Laude with a bachelor’s in economics. At OU I refined my passion for helping others into a focus on using my skillset to alleviate oppression on vulnerable portions of society, particularly BIPOC communities. I decided to pursue a degree in economics because it allowed me to inform policymakers and the general public about social issues. I dedicate the majority of my day to developing a solid foundation of empirical techniques and educating myself on social issues via my graduate journey at the University of Texas at Austin. I chose to pursue an advanced degree in economics because it allows me to simultaneously diversify and strengthen my skillset to infiltrate predominately white spaces, such as the public policy space and academic spaces. I sought out causal inference because it will develop my ability to conduct research accurately representing marginalized communities. In my spare time, I try to have a semblance of my regular life by playing with my puppy, spending time with my family, or catching up with friends.
+
+### Future
+In the next year, I hope to work as a policy analyst at an influential think-tank, researching the intersections of poverty, marginalized communities, and urban economics. Ideally, I will have moved to a large city because the COVID-19 vaccine has been administered to the vast majority of society (this is a stretch, but you said to be aspirational). Five years in the future, I hope to have completed my Ph.D., which is an avenue that I’m not currently convinced of pursuing and being a part-time civic engagement organizer. In ten years, I see myself advocating for marginalized communities as a CNN correspondent while collecting my weekly checks from own a successful Nothing Bundt Cakes store. I will then begin my training to become a professional basketball referee and diversifying my real-estate portfolio.
+
+## Quiz 1
+Question 1: According to Register, 2020, data decisions affect (pick one)?
+Answer: (1) Real people
+
+Question 2:In your own words, answer the following questions.
+2A. How is data science similar to and different from causal inference?
+Both data science and causal inference seek to tell stories using data. The main difference between the two feilds is that causal inference seeks to specifically find causal relationships whereas data science has more broad applications.
+
+2B. Briefly a predominantly data science research project and a predominantly causal inference research project.
+A predominately data science research project will start out with a testable question that does not necessary have to search for a causal effect. Next, data will be collected and turned into a useable form. Then, analysis will be performed on the dataset and conclusions will be drawn. A predominately causal inference research project asks a specific question regarding a causal connection between variables.
+
+Question 3: According to Keyes, 2019, what is perhaps a more accurate definition of data science (pick one)?
+Answer: (1) ‘The inhumane reduction of humanity down to what can be counted.’
