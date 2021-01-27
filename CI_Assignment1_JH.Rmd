@@ -21,6 +21,7 @@ Question 1: According to Register, 2020, data decisions affect (pick one)?
 Answer: (1) Real people
 
 Question 2:In your own words, answer the following questions.
+
 2A. How is data science similar to and different from causal inference?
 Both data science and causal inference seek to tell stories using data. The main difference between the two fields is that causal inference seeks to specifically find causal relationships, whereas data science has more broad applications.
 
