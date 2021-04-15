@@ -14,6 +14,9 @@ read_data <- function(df)
 
 nsw_dw <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/nsw_mixtape.dta")
 
+nsw_dw <- nsw_dw %>%
+  filter(treat == 1)
+
 # Append variables as necessary
 nsw_lm <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/cps_mixtape.dta") %>% 
   bind_rows(nsw_dw) %>% 
