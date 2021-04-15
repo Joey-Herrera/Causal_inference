@@ -46,7 +46,3 @@ nsw_logit <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main
          re78sq = re78^2,
          re75cube = re78^3)
 
-nsw_OLS_cube %>% 
-  filter(treat == 0) %>% 
-  ggplot() +
-  geom_histogram(aes(x = pscore))
