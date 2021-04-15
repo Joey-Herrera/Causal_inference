@@ -5,7 +5,7 @@ library(tidyverse)
 # Create a path to read data from the source
 read_data <- function(df)
 {
-  full_path <- paste("https://raw.github.com/scunning1975/mixtape/master/", 
+  full_path <- paste("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/", 
                      df, sep = "")
   df <- read_dta(full_path)
   return(df)
