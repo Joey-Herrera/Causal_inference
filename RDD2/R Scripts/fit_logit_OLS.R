@@ -118,7 +118,4 @@ pscore_treated_OLScube <- nsw_OLS_cube %>%
 
 
 
-nsw_OLS_cube %>% 
-  filter(treat == 0) %>% 
-  ggplot() +
-  geom_histogram(aes(x = pscore))
+
