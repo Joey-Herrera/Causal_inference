@@ -16,66 +16,67 @@ OLS_nsw <- lm(treat ~ age + agesq + agecube + educ + educsq +
 ##### Logit 
 ### quadratic max
 # take out age cubed
-logit_nsw_quad <- glm(treat ~ age + agesq  + educ + educsq + 
-                   marr + nodegree + black + hisp + re74 + re75 + u74 +
-                   u75 + interaction1, family = binomial(link = "logit"), 
-                 data = nsw_dw_cpscontrol)
+logit_model_quad <- glm(treat ~ age + agesq  + educ + educsq + 
+                   marr + nodegree + black + hisp + re74 + re74sq + re75 + re75sq +
+                     u74 + u75, family = binomial(link = "logit"), 
+                 data = nsw_logit)
+
 # Fit propoensity score to quad model
-nsw_dw_cpscontrol <- nsw_dw_cpscontrol %>% 
-  mutate(pscore = logit_nsw_quad$fitted.values)
+nsw_logit_quad <- nsw_logit %>% 
+  mutate(pscore = logit_model_quad$fitted.values)
 
 # mean pscore control
-pscore_control <- nsw_dw_cpscontrol %>% 
+pscore_control_logit_quad <- nsw_logit_quad %>% 
   filter(treat == 0) %>% 
   pull(pscore) %>% 
   mean()
-# 0.00885
+# 0.00893
 
 # mean pscore treated
-pscore_treated <- nsw_dw_cpscontrol %>% 
+pscore_treated_logit_quad <- nsw_logit_quad %>% 
   filter(treat == 1) %>% 
   pull(pscore) %>% 
   mean()
-# 0.2159
+# 0.2156
 ####################################
 ### cube max
-logit_nsw_cube <- glm(treat ~ age + agesq + agecube + educ + educsq + 
-                   marr + nodegree + black + hisp + re74 + re75 + u74 +
-                   u75 + interaction1, family = binomial(link = "logit"), 
-                 data = nsw_dw_cpscontrol)
+logit_model_cube <- glm(treat ~ age + agesq + agecube + educ + educsq + educcube +
+                   marr + nodegree + black + hisp + re74 + re74sq + re74cube + re75 + re75sq + re75cube + u74 +
+                   u75, family = binomial(link = "logit"), 
+                 data = nsw_logit)
 
 # Fit propoensity score to cubic model
-nsw_dw_cpscontrol_cube <- nsw_dw_cpscontrol %>% 
-  mutate(pscore = logit_nsw$fitted.values)
+nsw_logit_cube <- nsw_logit %>% 
+  mutate(pscore = logit_model_cube$fitted.values)
 
 # mean pscore control
-pscore_control_cube <- nsw_dw_cpscontrol_cube %>% 
+pscore_control_cube <- nsw_logit_cube %>% 
   filter(treat == 0) %>% 
   pull(pscore) %>% 
   mean()
-# 0.00892
+# 0.008816
 
 # mean pscore treated
-pscore_treated_cube <- nsw_dw_cpscontrol_cube %>% 
+pscore_treated_cube <- nsw_logit_cube %>% 
   filter(treat == 1) %>% 
   pull(pscore) %>% 
   mean()
-# 0.2218
+# 0.2255
 
 
 ########################################################
 #Linear probability model
 # Quad max
-OLS_nsw_quad <- lm(treat ~ age + agesq + educ + educsq + 
-                marr + nodegree + black + hisp + re74 + re75 + u74 +
-                u75 + interaction1,data = nsw_dw_cpscontrol)
+OLS_model_quad <- lm(treat ~ age + agesq + educ + educsq + 
+                marr + nodegree + black + hisp + re74 + re74sq + re75 + re75sq + u74 +
+                u75,data = nsw_lm)
 
 # Fit propoensity score to quad model
-OLS_cpscontrol_quad <- nsw_dw_cpscontrol %>% 
-  mutate(pscore = OLS_nsw_quad$fitted.values)
+nsw_OLS_quad <- nsw_lm %>% 
+  mutate(pscore = OLS_model_quad$fitted.values)
 
 # mean pscore control
-pscore_control_quad <- OLS_cpscontrol_quad %>% 
+pscore_control_quad <- nsw_OLS_quad %>% 
   filter(treat == 0) %>% 
   pull(pscore) %>% 
   mean()
@@ -83,7 +84,7 @@ pscore_control_quad <- OLS_cpscontrol_quad %>%
 # 0.01005653
 
 # mean pscore treated
-pscore_treated_quad <- OLS_cpscontrol_quad %>% 
+pscore_treated_quad <- nsw_OLS_quad %>% 
   filter(treat == 1) %>% 
   pull(pscore) %>% 
   mean()
@@ -91,16 +92,17 @@ pscore_treated_quad <- OLS_cpscontrol_quad %>%
 
 ############
 # Cube max
-OLS_nsw_cube <- lm(treat ~ age + agesq + agecube + educ + educsq + 
-                marr + nodegree + black + hisp + re74 + re75 + u74 +
-                u75 + interaction1,data = nsw_dw_cpscontrol)
+OLS_model_cube <- lm(treat ~ age + agesq + agecube + educ + educsq + educcube +
+                marr + nodegree + black + hisp + re74 + re74sq + re74cube +
+                  re75 + re75sq + re75cube + u74 +
+                u75,data = nsw_lm)
 
 # Fit propoensity score to quad model
-OLS_cpscontrol_cube <- nsw_dw_cpscontrol %>% 
-  mutate(pscore = OLS_nsw_cube$fitted.values)
+nsw_OLS_cube <- nsw_lm %>% 
+  mutate(pscore = OLS_model_cube$fitted.values)
 
 # mean pscore control
-pscore_control_cube <- OLS_cpscontrol_cube %>% 
+pscore_control_OLScube <- nsw_OLS_cube %>% 
   filter(treat == 0) %>% 
   pull(pscore) %>% 
   mean()
@@ -108,8 +110,15 @@ pscore_control_cube <- OLS_cpscontrol_cube %>%
 # 0.010024
 
 # mean pscore treated
-pscore_treated_cube <- OLS_cpscontrol_cube %>% 
+pscore_treated_OLScube <- nsw_OLS_cube %>% 
   filter(treat == 1) %>% 
   pull(pscore) %>% 
   mean()
-# 0.1204243
+# 0.1194
+
+
+
+OLS_cpscontrol_cube %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
