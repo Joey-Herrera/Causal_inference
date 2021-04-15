@@ -1,6 +1,7 @@
 # Load in required packages
 library(haven)
 library(tidyverse)
+library(ggplot2)
 
 # Create a path to read data from the source
 read_data <- function(df)
@@ -11,10 +12,10 @@ read_data <- function(df)
   return(df)
 }
 
-nsw_dw <- read_data("nsw_mixtape.dta")
+nsw_dw <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/nsw_mixtape.dta")
 
 # Append variables as necessary
-nsw_lm <- read_data("cps_mixtape.dta") %>% 
+nsw_lm <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/cps_mixtape.dta") %>% 
   bind_rows(nsw_dw) %>% 
   mutate(agesq = age^2,
          agecube = age^3,
@@ -30,7 +31,7 @@ nsw_lm <- read_data("cps_mixtape.dta") %>%
          re75cube = re78^3,
          )
 
-nsw_logit <- read_data("cps_mixtape.dta") %>% 
+nsw_logit <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/cps_mixtape.dta") %>% 
   bind_rows(nsw_dw) %>% 
   mutate(agesq = age^2,
          agecube = age^3,
@@ -44,3 +45,8 @@ nsw_logit <- read_data("cps_mixtape.dta") %>%
          re75cube = re75^3,
          re78sq = re78^2,
          re75cube = re78^3)
+
+nsw_OLS_cube %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
