@@ -168,7 +168,7 @@ OLS_model_cube <- lm(treat ~ age + agesq + agecube + educ + educsq + educcube +
                   re75 + re75sq + re75cube + u74 +
                 u75,data = nsw_lm)
 
-# Fit propoensity score to quad model
+# Fit propoensity score to cubic model
 nsw_OLS_cube <- nsw_lm %>% 
   mutate(pscore = OLS_model_cube$fitted.values)
 
@@ -188,6 +188,23 @@ pscore_treated_OLScube <- nsw_OLS_cube %>%
 # 0.14828
 
 ```
+The propensity scores for the four models are as follows:
+
+quadratic linear probability model
+treatment pscore: 0.14128
+control pscore: 0.00993
+
+cubic linear probability model
+treatment pscore: 0.14828 
+control pscore: 0.00985
+
+quadratic logit model
+treatment pscore: 0.4025
+control pscore: 0.00691
+
+cubic logit model
+treatment pscore: 0.4279
+control pscore: 0.00662
 
 ```{r}
 ##### Question 1C Histograms
@@ -240,7 +257,7 @@ nsw_OLS_cube %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 ```
-
+The histograms for the control groups for the logistic models have minimum pscores of 0 and a maximum pscore of about 0.4. The treatment groups for the logistic models have treatment groups with minimum pscores of 0 and a maximum pscore of 1. The linear proability models have control groups with minimum pscores of about -0.05 and a maximum of 0.2. The treatment groups have minimum pscores of -0.02 and a maximum of about 0.2.
 ```{r}
 # Question 1D. trim the propsenity scores and recreate the histograms from 1C
 
@@ -388,6 +405,9 @@ nsw_OLS_cube_trim %>%
   geom_histogram(aes(x = pscore))
 ```
 
+
+For the following questions I will only use the trimmed data, cubic logit model, and the quadratic linear probability model.
+
 ### Question 2
 ```{r}
 ##### Question 2: First difference for the logit cubic model and quadratic linear probability model
@@ -458,6 +478,8 @@ nsw_OLS_quad_trim <- nsw_OLS_quad_trim %>%
   select(-y1_OLS, -y0_OLS)
 ```
 
+The average treatment effect for the cubic logit model is 1461.06 and the average treatment effect for the quadratic linear probability model is -5014.11.
+
 ### Question 3
 ```{r}
 ##### Question 3 weighted difference in difference regression
@@ -480,6 +502,7 @@ nsw_logit_cube_trim %>%
   pull(ht) %>% 
   mean()
 ```
+The weighted difference in difference estimate for the cubic logit model is 16029.51.
 ```{r}
 ### Quadratic linear proability model
 # Manual with non-normalized weights using trimmed data for the cubic logit model
@@ -499,4 +522,4 @@ nsw_OLS_quad_trim %>%
   pull(ht) %>% 
   mean()
 ```
-
+The weighted difference in difference estimate for the quadratic linear proability model is -4047.76.
