@@ -43,7 +43,8 @@ nsw_lm <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RD
          re75cube = re75^3,
          re78sq = re78^2,
          re75cube = re78^3,
-         )
+          interaction1 = educ*re74,
+         interaction2 = u74*hisp)
 
 nsw_logit <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/cps_mixtape.dta") %>% 
   bind_rows(nsw_dw) %>% 
@@ -58,7 +59,9 @@ nsw_logit <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main
          re75sq = re75^2,
          re75cube = re75^3,
          re78sq = re78^2,
-         re75cube = re78^3)
+         re75cube = re78^3,
+         interaction1 = educ*re74,
+         interaction2 = u74*hisp)
 
 
 ```
@@ -70,12 +73,12 @@ nsw_logit <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main
 logit_nsw <- glm(treat ~ age + agesq + agecube + educ + educsq + 
                    marr + nodegree + black + hisp + re74 + re75 + u74 +
                    u75 + interaction1, family = binomial(link = "logit"), 
-                 data = nsw_dw_cpscontrol)
+                 data = nsw_logit)
 logit_nsw
 # estimating model using linear probability model
 OLS_nsw <- lm(treat ~ age + agesq + agecube + educ + educsq + 
                    marr + nodegree + black + hisp + re74 + re75 + u74 +
-                   u75 + interaction1,data = nsw_dw_cpscontrol)
+                   u75 + interaction1,data = nsw_lm)
 
 OLS_nsw
 ```
