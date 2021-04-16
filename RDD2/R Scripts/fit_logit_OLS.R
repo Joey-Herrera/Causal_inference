@@ -30,14 +30,14 @@ pscore_control_logit_quad <- nsw_logit_quad %>%
   filter(treat == 0) %>% 
   pull(pscore) %>% 
   mean()
-# 0.00893
+# 0.00691
 
 # mean pscore treated
 pscore_treated_logit_quad <- nsw_logit_quad %>% 
   filter(treat == 1) %>% 
   pull(pscore) %>% 
   mean()
-# 0.2156
+# 0.4025
 ####################################
 ### cube max
 logit_model_cube <- glm(treat ~ age + agesq + agecube + educ + educsq + educcube +
@@ -54,14 +54,14 @@ pscore_control_cube <- nsw_logit_cube %>%
   filter(treat == 0) %>% 
   pull(pscore) %>% 
   mean()
-# 0.008816
+# 0.00662
 
 # mean pscore treated
 pscore_treated_cube <- nsw_logit_cube %>% 
   filter(treat == 1) %>% 
   pull(pscore) %>% 
   mean()
-# 0.2255
+# 0.4279
 
 
 ########################################################
@@ -81,14 +81,14 @@ pscore_control_quad <- nsw_OLS_quad %>%
   pull(pscore) %>% 
   mean()
 
-# 0.01005653
+# 0.00993
 
 # mean pscore treated
 pscore_treated_quad <- nsw_OLS_quad %>% 
   filter(treat == 1) %>% 
   pull(pscore) %>% 
   mean()
-# 0.1165476
+# 0.14128
 
 ############
 # Cube max
@@ -107,14 +107,14 @@ pscore_control_OLScube <- nsw_OLS_cube %>%
   pull(pscore) %>% 
   mean()
 
-# 0.010024
+# 0.00985
 
 # mean pscore treated
 pscore_treated_OLScube <- nsw_OLS_cube %>% 
   filter(treat == 1) %>% 
   pull(pscore) %>% 
   mean()
-# 0.1194
+# 0.14828
 
 
 
