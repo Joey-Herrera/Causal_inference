@@ -1,0 +1,502 @@
+---
+title: "Complete_RDD2"
+author: "Joey Herrera"
+date: "4/16/2021"
+output: pdf_document
+---
+# Causal Inference Replication 2
+```{r setup, include=FALSE}
+# Load in required packages
+library(haven)
+library(tidyverse)
+library(ggplot2)
+```
+
+Load data from the RDD2 repository and add addtional variables
+```{r}
+# Create a path to read data from the source
+read_data <- function(df)
+{
+  full_path <- paste("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/", 
+                     df, sep = "")
+  df <- read_dta(full_path)
+  return(df)
+}
+
+nsw_dw <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/nsw_mixtape.dta")
+
+nsw_dw <- nsw_dw %>%
+  filter(treat == 1)
+
+# Append variables as necessary
+nsw_lm <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/cps_mixtape.dta") %>% 
+  bind_rows(nsw_dw) %>% 
+  mutate(agesq = age^2,
+         agecube = age^3,
+         educsq = educ*educ,
+         educcube = educ^3,
+         u74 = case_when(re74 == 0 ~ 1, TRUE ~ 0),
+         u75 = case_when(re75 == 0 ~ 1, TRUE ~ 0),
+         re74sq = re74^2, 
+         re74cube = re74^3,
+         re75sq = re75^2,
+         re75cube = re75^3,
+         re78sq = re78^2,
+         re75cube = re78^3,
+         )
+
+nsw_logit <- read_dta("https://raw.github.com/Joey-Herrera/Causal_inference/main/RDD2/Data/cps_mixtape.dta") %>% 
+  bind_rows(nsw_dw) %>% 
+  mutate(agesq = age^2,
+         agecube = age^3,
+         educsq = educ*educ,
+         educcube = educ^3,
+         u74 = case_when(re74 == 0 ~ 1, TRUE ~ 0),
+         u75 = case_when(re75 == 0 ~ 1, TRUE ~ 0),
+         re74sq = re74^2, 
+         re74cube = re74^3,
+         re75sq = re75^2,
+         re75cube = re75^3,
+         re78sq = re78^2,
+         re75cube = re78^3)
+
+
+```
+
+### Question 1
+```{r}
+# Question 1A
+# fitting model using a logit regression
+logit_nsw <- glm(treat ~ age + agesq + agecube + educ + educsq + 
+                   marr + nodegree + black + hisp + re74 + re75 + u74 +
+                   u75 + interaction1, family = binomial(link = "logit"), 
+                 data = nsw_dw_cpscontrol)
+logit_nsw
+# estimating model using linear probability model
+OLS_nsw <- lm(treat ~ age + agesq + agecube + educ + educsq + 
+                   marr + nodegree + black + hisp + re74 + re75 + u74 +
+                   u75 + interaction1,data = nsw_dw_cpscontrol)
+
+OLS_nsw
+```
+
+```{r}
+# Question 1B
+# Fit a propensity score using a quadratic for every variable and another with a cubic for every variable that is not a dummy variable
+###################
+##### Logit 
+### quadratic max
+# take out age cubed
+logit_model_quad <- glm(treat ~ age + agesq  + educ + educsq + 
+                   marr + nodegree + black + hisp + re74 + re74sq + re75 + re75sq +
+                     u74 + u75, family = binomial(link = "logit"), 
+                 data = nsw_logit)
+
+# Fit propoensity score to quad model
+nsw_logit_quad <- nsw_logit %>% 
+  mutate(pscore = logit_model_quad$fitted.values)
+
+# mean pscore control
+pscore_control_logit_quad <- nsw_logit_quad %>% 
+  filter(treat == 0) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.00691
+
+# mean pscore treated
+pscore_treated_logit_quad <- nsw_logit_quad %>% 
+  filter(treat == 1) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.4025
+####################################
+### cube max
+logit_model_cube <- glm(treat ~ age + agesq + agecube + educ + educsq + educcube +
+                   marr + nodegree + black + hisp + re74 + re74sq + re74cube + re75 + re75sq + re75cube + u74 +
+                   u75, family = binomial(link = "logit"), 
+                 data = nsw_logit)
+
+# Fit propoensity score to cubic model
+nsw_logit_cube <- nsw_logit %>% 
+  mutate(pscore = logit_model_cube$fitted.values)
+
+# mean pscore control
+pscore_control_cube <- nsw_logit_cube %>% 
+  filter(treat == 0) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.00662
+
+# mean pscore treated
+pscore_treated_cube <- nsw_logit_cube %>% 
+  filter(treat == 1) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.4279
+
+
+########################################################
+#Linear probability model
+# Quad max
+OLS_model_quad <- lm(treat ~ age + agesq + educ + educsq + 
+                marr + nodegree + black + hisp + re74 + re74sq + re75 + re75sq + u74 +
+                u75,data = nsw_lm)
+
+# Fit propoensity score to quad model
+nsw_OLS_quad <- nsw_lm %>% 
+  mutate(pscore = OLS_model_quad$fitted.values)
+
+# mean pscore control
+pscore_control_quad <- nsw_OLS_quad %>% 
+  filter(treat == 0) %>% 
+  pull(pscore) %>% 
+  mean()
+
+# 0.00993
+
+# mean pscore treated
+pscore_treated_quad <- nsw_OLS_quad %>% 
+  filter(treat == 1) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.14128
+
+############
+# Cube max
+OLS_model_cube <- lm(treat ~ age + agesq + agecube + educ + educsq + educcube +
+                marr + nodegree + black + hisp + re74 + re74sq + re74cube +
+                  re75 + re75sq + re75cube + u74 +
+                u75,data = nsw_lm)
+
+# Fit propoensity score to quad model
+nsw_OLS_cube <- nsw_lm %>% 
+  mutate(pscore = OLS_model_cube$fitted.values)
+
+# mean pscore control
+pscore_control_OLScube <- nsw_OLS_cube %>% 
+  filter(treat == 0) %>% 
+  pull(pscore) %>% 
+  mean()
+
+# 0.00985
+
+# mean pscore treated
+pscore_treated_OLScube <- nsw_OLS_cube %>% 
+  filter(treat == 1) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.14828
+
+```
+
+```{r}
+##### Question 1C Histograms
+
+# logit quad control
+nsw_logit_quad %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# logit quad treatment
+nsw_logit_quad %>% 
+  filter(treat == 1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# logit cube control
+nsw_logit_cube %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# logit cube treatment
+nsw_logit_cube %>% 
+  filter(treat == 1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# linear probability model (quadratic) control
+nsw_OLS_quad %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# linear probability model (quadratic) treatment
+nsw_OLS_quad %>%
+  filter(treat == 1) %>%
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# linear probability model (cubic) control
+nsw_OLS_cube %>%
+  filter(treat == 0) %>%
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# linear probability model (cubic) treatment
+nsw_OLS_cube %>%
+  filter(treat == 1) %>%
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+```
+
+```{r}
+# Question 1D. trim the propsenity scores and recreate the histograms from 1C
+
+# trimming propensity score for logit and OLS data
+# logit model (quadratic)
+nsw_logit_quad_trim <- nsw_logit_quad %>% 
+  filter(!(pscore >= 0.9)) %>% 
+  filter(!(pscore <= 0.1))
+
+# logit model (cubic)
+nsw_logit_cube_trim <- nsw_logit_cube %>% 
+  filter(!(pscore >= 0.9)) %>% 
+  filter(!(pscore <= 0.1))
+
+# linear probability model (quadratic)
+nsw_OLS_quad_trim <- nsw_OLS_quad %>% 
+  filter(!(pscore >= 0.9)) %>% 
+  filter(!(pscore <= 0.1))
+
+# linear probability model (cubic)
+nsw_OLS_cube_trim <- nsw_OLS_cube %>% 
+  filter(!(pscore >= 0.9)) %>% 
+  filter(!(pscore <= 0.1))
+
+###################################################################
+# Rerun Question 1B
+##### Logit 
+### quadratic max
+
+# mean pscore control
+pscore_control_logit_quad_trim <- nsw_logit_quad_trim %>% 
+  filter(treat == 0) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.2506
+
+# mean pscore treated
+pscore_treated_logit_quad_trim <- nsw_logit_quad_trim %>% 
+  filter(treat == 1) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.2768
+####################################
+### cube max
+
+# mean pscore control
+pscore_control_cube_trim <- nsw_logit_cube_trim %>% 
+  filter(treat == 0) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.2516
+
+# mean pscore treated
+pscore_treated_cube_trim <- nsw_logit_cube_trim %>% 
+  filter(treat == 1) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.2902
+
+
+########################################################
+#Linear probability model
+# Quad max
+# mean pscore control
+pscore_control_quad_trim <- nsw_OLS_quad_trim %>% 
+  filter(treat == 0) %>% 
+  pull(pscore) %>% 
+  mean()
+
+# 0.1286
+
+# mean pscore treated
+pscore_treated_quad_trim <- nsw_OLS_quad_trim %>% 
+  filter(treat == 1) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.1374
+
+############
+#linear proability model (cubic)
+# mean pscore control
+pscore_control_OLS_cube_trim <- nsw_OLS_cube_trim %>% 
+  filter(treat == 0) %>% 
+  pull(pscore) %>% 
+  mean()
+
+# 0.1294
+
+# mean pscore treated
+pscore_treated_OLS_cube_trim <- nsw_OLS_cube_trim %>% 
+  filter(treat == 1) %>% 
+  pull(pscore) %>% 
+  mean()
+# 0.1404
+
+###############################
+# rerun the histograms from 1C
+
+# logit quad control
+nsw_logit_quad_trim %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# logit quad treatment
+nsw_logit_quad_trim %>% 
+  filter(treat == 1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# logit cube control
+nsw_logit_cube_trim %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# logit cube treatment
+nsw_logit_cube_trim %>% 
+  filter(treat == 1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# linear probability model (quadratic) control
+nsw_OLS_quad_trim %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# linear probability model (quadratic) treatment
+nsw_OLS_quad_trim %>%
+  filter(treat == 1) %>%
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# linear probability model (cubic) control
+nsw_OLS_cube_trim %>%
+  filter(treat == 0) %>%
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+# linear probability model (cubic) treatment
+nsw_OLS_cube_trim %>%
+  filter(treat == 1) %>%
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+```
+
+### Question 2
+```{r}
+##### Question 2: First difference for the logit cubic model and quadratic linear probability model
+### First difference for the logit cubic model
+# Filter re78 to only include people in the treatment group
+nsw_logit_cube_trim %>% 
+  filter(treat == 1) %>% 
+  summary(re78)
+
+# Filter and average on the treatment effect
+mean1 <- nsw_logit_cube_trim %>% 
+  filter(treat == 1) %>% 
+  pull(re78) %>% 
+  mean()
+
+# save the 
+nsw_logit_cube_trim$y1 <- mean1
+
+# Average treatment effect on the untreated
+nsw_logit_cube_trim %>% 
+  filter(treat == 0) %>% 
+  summary(re78)
+
+mean0 <- nsw_logit_cube_trim %>% 
+  filter(treat == 0) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_logit_cube_trim$y0 <- mean0
+
+ate_logit <- unique(nsw_logit_cube_trim$y1 - nsw_logit_cube_trim$y0)
+# 1461.0585
+nsw_logit_cube_trim <- nsw_logit_cube_trim %>% 
+  filter(treat == 1) %>% 
+  select(-y1, -y0)
+
+### First difference for quadratic linear probability model
+# Filter re78 to only include people in the treatment group
+nsw_OLS_quad_trim %>% 
+  filter(treat == 1) %>% 
+  summary(re78)
+
+# Filter and average on the treatment effect
+mean1_OLS <- nsw_OLS_quad_trim %>% 
+  filter(treat == 1) %>% 
+  pull(re78) %>% 
+  mean()
+
+# save the 
+nsw_OLS_quad_trim$y1_OLS <- mean1_OLS
+
+# Average treatment effect on the untreated
+nsw_OLS_quad_trim %>% 
+  filter(treat == 0) %>% 
+  summary(re78)
+
+mean0_OLS <- nsw_OLS_quad_trim %>% 
+  filter(treat == 0) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_OLS_quad_trim$y0_OLS <- mean0_OLS
+
+ate_OLS <- unique(nsw_OLS_quad_trim$y1_OLS - nsw_OLS_quad_trim$y0_OLS)
+# -5014.1128
+nsw_OLS_quad_trim <- nsw_OLS_quad_trim %>% 
+  filter(treat == 1) %>% 
+  select(-y1_OLS, -y0_OLS)
+```
+
+### Question 3
+```{r}
+##### Question 3 weighted difference in difference regression
+### Cubic logit model
+N <- nrow(nsw_logit_cube_trim)
+# Manual with non-normalized weights using trimmed data for the cubic logit model
+nsw_logit_cube_trim <- nsw_logit_cube_trim %>% 
+  mutate(d1 = treat/pscore,
+         d0 = (1-treat)/(1-pscore))
+
+s1 <- sum(nsw_logit_cube_trim$d1)
+s0 <- sum(nsw_logit_cube_trim$d0)
+
+nsw_logit_cube_trim <- nsw_logit_cube_trim %>% 
+  mutate(y1 = treat * re78/pscore,
+         y0 = (1-treat) * re78/(1-pscore),
+         ht = y1 - y0)
+
+nsw_logit_cube_trim %>% 
+  pull(ht) %>% 
+  mean()
+```
+```{r}
+### Quadratic linear proability model
+# Manual with non-normalized weights using trimmed data for the cubic logit model
+nsw_OLS_quad_trim <- nsw_OLS_quad_trim %>% 
+  mutate(d1 = treat/pscore,
+         d0 = (1-treat)/(1-pscore))
+
+s1 <- sum(nsw_OLS_quad_trim$d1)
+s0 <- sum(nsw_OLS_quad_trim$d0)
+
+nsw_OLS_quad_trim <- nsw_OLS_quad_trim %>% 
+  mutate(y1 = treat * re78/pscore,
+         y0 = (1-treat) * re78/(1-pscore),
+         ht = y1 - y0)
+
+nsw_OLS_quad_trim %>% 
+  pull(ht) %>% 
+  mean()
+```
+
